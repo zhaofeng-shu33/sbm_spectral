@@ -1,0 +1,176 @@
+\subsection{Non-Adaptive Sampling}
+
+We first propose Spectral Partition (SP), a clustering algorithm for non-adaptive URS-1 or URS-2 sampling strategies. From the $T$ observations, we construct a matrix $A\in\mathbb{N}^{n\times n}$: for any pair $(v,w)$, $A_{vw}$ is equal to the number of positive observations of node pair $(v,w)$. In particular, if $(v,w)$ has not been observed, $A_{vw}=0$. Note that for all pair $(v,w)$, $\mathbb{E}[A_{vw}]={2T\over n(n-1)}p$ if $v$ and $w$ are in the same cluster, and 
+$\mathbb{E}[A_{vw}]={2T\over n(n-1)}q$ otherwise (the expectation is taken accounting for the randomness in both the number of times node pair $(v,w)$ is observed, and the corresponding outcomes). Matrix $\mathbb{E}[A]$ is symmetric and of rank $K$, and its eigenvectors identify the clusters. For example, if $K=2$, the two eigenvalues of $\mathbb{E}[A]$ are $\overline{\lambda}_1={T\over n-1}(p+\sqrt{p^2-4\alpha(1-\alpha)(p^2-q^2)})$ and $\overline{\lambda}_2={T\over n-1}(p-\sqrt{p^2-4\alpha(1-\alpha)(p^2-q^2)})$, respectively, where $\alpha=\alpha_1$ is the proportion of nodes in the first cluster. Assume now that the first cluster corresponds to nodes $1,\ldots,\alpha n$, then the eigenvectors of $\mathbb{E}[A]$ are $(1,\ldots,1,a_i,\ldots,a_i)$ where the first $\alpha n$ components are equal to 1, and $a_i={\overline{\lambda}_i{n-1\over 2T}-p\alpha\over (1-\alpha)q}$, for $i=1,2$.  
+
+From a spectral analysis of $A$, we expect to accurately recover the clusters if $\frac{(p-q)^2}{p+q}\frac{T}{n} \gg 1$. Indeed it can be seen that the eigenvalues of $\mathbb{E}[A]$ are $\Omega((p-q){T\over n})$. In addition, the noise matrix $X=A-\mathbb{E}[A]$ satisfies $\| X \| =O (\sqrt{\frac{T}{n}(p+q)})$ provided that the number of observations per node pair does not exceed $\log(n)$ (this is a simple consequence of random matrix theory, see e.g. \cite{tao2012, chatterjee2012}). The SP algorithm whose pseudo-code (Algorithm 1) is presented below, exploits this observation and may be seen as an extension of algorithms proposed in \cite{coja2010} to recover clusters in the simple stochastic block model ($T=n(n-1)/2$ and URS-2 sampling strategy). Our algorithm works for any observation budget and any random sampling strategy, and its performance analysis is much simpler than that presented in \cite{coja2010}.
+
+
+\begin{algorithm}[t!]
+   \caption{Spectral Partition}
+   \label{alg:partition}
+\begin{algorithmic}
+\STATE {\bfseries Input:} Observation matrix $A$.
+\STATE  {\bf 1. Trimming.} Construct $A_{\Gamma}=(A_{vw})_{v,w\in \Gamma}$ where $\Gamma = \{v:
+  \sum_{w \in V} A_{vw} \le 5K \frac{\sum_{(v,w) \in E } A_{vw}}{n} \}$.
+\STATE {\bf 2. Spectral Decomposition.} Run Algorithm 2 ($K=2$) or Algorithm 3 ($K\ge 3$)
+\STATE with input $A_{\Gamma}, \frac{ \sum_{(v,w) \in E } A_{vw} }{n^2}$, and output $(S_k)_{k=1,\ldots,K}$.
+\STATE {\bf 3. Improvement.}
+   \STATE $S^{(0)}_k \leftarrow S_k ,$ for all $k$
+   \FOR{$i=1$ {\bfseries to} $\log n$ }
+     \STATE $S^{(i)}_k \leftarrow \emptyset ,$ for all $k$
+      \FOR{$v \in V$}
+  \STATE Find $k^{\star} = \arg \max_{k} \{\sum_{w \in V} A_{vw} / |
+  S^{(i-1)}_k | \} $ (tie broken uniformly at random)
+   \STATE $S^{(i)}_{k^{\star}} \leftarrow S^{(i)}_{k^{\star}} \cup \{ v \}$
+   \ENDFOR
+   \ENDFOR
+\STATE $\hat{V}_k \leftarrow S_k^{(i)}$, for all $k$
+   \STATE {\bfseries Output:} $(\hat{V}_k)_{k=1,\ldots,K}$.
+\end{algorithmic}
+\end{algorithm}
+
+
+The algorithm has three steps. \\
+{\bf 1. Trimming.} We first trim the observation matrix $A$, i.e., we keep the entries corresponding to a set $\Gamma$ of nodes that did not get too many positive observations. More precisely, $\Gamma = \{v: \sum_{w \in V} A_{vw} \le 10 \frac{\sum_{(v,w) \in E } A_{vw}}{n} \} $. The resulting trimmed observation matrix is denoted by $A_\Gamma$. \\
+{\bf 2. Spectral decomposition.} We then extract the clusters from the spectral analysis of $A_\Gamma$. We present a simple method (Algorithm 2) when $K=2$, exploiting the fact that clusters can be recovered just looking at the signs of the components of the eigenvectors corresponding to the two largest eigenvalues of $A_\Gamma$. When $K\ge 3$, we extract the clusters from the column vectors of the rank-$K$ approximation matrix $\hat{A}$ of $A_\Gamma$. This rank-$K$ approximation is obtained by singular value decomposition and by keeping the $K$ largest singular values and the corresponding eigenvectors, see \cite{chatterjee2012}. Our algorithm exploits the fact that the column vectors corresponding to nodes in the same clusters should be relatively close to each other. We use the distance between these vectors to classify nodes, in the spirit of the $k$-means clustering algorithm. In the pseudo-code, $\hat{A}_v$ denotes the column vector of $\hat{A}$ corresponding to node $v$, and $\|\cdot\|$ refers to the euclidian distance.\\
+{\bf 3. Improvement.} Finally, we further improve the results. After the spectral decomposition step, the identified clusters $(S_k)_{k=1,\ldots,K}$ are good approximations of the true clusters. The improvement is obtained by sequentially considering each node and by moving the node to the cluster with which it has the largest number of positive observations.
+
+\begin{algorithm}[t!]
+   \caption{Spectral decomposition (for $K=2$)}
+   \label{alg:trimspec}
+\begin{algorithmic}
+\STATE {\bfseries Input:} $A_{\Gamma}$, $\Gamma$.
+\STATE $x_1$ and $x_2 ~ \leftarrow$ the eigen vectors of $A_{\Gamma}$ corresponding to the two largest eigenvalues.
+\IF{$\big( \sum_{v \in \Gamma} x_1 (v) \big)\cdot \big(\sum_{v \in
+    \Gamma} x_1 (v)\big) >0$}\STATE{$x_2 \leftarrow -x_2$}
+\ENDIF
+\STATE $\hat{x} \leftarrow x_1 + x_2 -\frac{1}{| \Gamma |} {\bm J}(x_1 +
+  x_2),$ where $\bm{J}$ denotes the $\Gamma \times \Gamma$ matrix
+  filled with $1.$
+\STATE $S_1 \leftarrow \{v \in \Gamma : \hat{x}(v) >0 \}$ and $S_2 \leftarrow \{v \in \Gamma : \hat{x}(v) <0 \}$
+\STATE For all $v \notin S_1 \cup S_2,$ randomly place $V$ in
+$S_1$ or $S_2$
+\STATE {\bfseries Output:} $(S_1 , S_2)$.
+\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}[t!]
+   \caption{Spectral decomposition (for $K\ge 3$)}
+   \label{alg:specg}
+\begin{algorithmic}
+   \STATE {\bfseries Input:} $A_{\Gamma}, \frac{ \sum_{(v,w) \in E } A_{vw} }{n^2}$ 
+\STATE $\hat{A} \leftarrow $ $K$-rank approximation of $A_{\Gamma}$
+\FOR{$i=1$ {\bfseries to} $\log n$ }
+\STATE $Q_{i,v} \leftarrow \{ w \in {V} :
+\| \hat{A}_w  -\hat{A}_v\|^2 \le i \frac{\sum_{(v,w) \in E } A_{vw} }{100n^2} \} $
+\STATE $T_{i,0}\leftarrow \emptyset$
+\FOR{$k=1$ {\bfseries to} $K$ }
+\STATE $v_k^{\star} \leftarrow \arg \max_{v} | Q_{i,v}\setminus \bigcup_{l=1}^{k-1} T_{i,l} |$ 
+\STATE $T_{i,k} \leftarrow Q_{i,v_k^{\star}} \setminus \bigcup_{l=1}^{k-1} T_{i,l} $ and $\xi_{i,k} \leftarrow \sum_{v \in T_{i,k}}  \hat{A}_v/ |T_{i,k}| .$
+\ENDFOR
+\FOR{$v \in V \setminus ( \bigcup_{k=1}^K T_{i,k} )$}
+\STATE $k^{\star} \leftarrow \arg \min_{k} \| \hat{A}_v -\xi_{i,k}\|$ 
+\STATE $T_{i,k^{\star}} \leftarrow T_{i,k^{\star}} \cup \{v\}$
+\ENDFOR
+\STATE $r_i  \leftarrow \sum_{k=1}^K \sum_{v \in T_{i,k}} \| \hat{A}_v -\xi_{i,k}\|^2$
+\ENDFOR
+
+\STATE $i^{\star} \leftarrow \arg \min_{i} r_i.$
+\STATE $S_k\leftarrow T_{i^\star,k}$ for all $k$
+\STATE {\bfseries Output:} $(S_k)_{k=1,\ldots,K}$.
+\end{algorithmic}
+\end{algorithm}
+
+In the following theorem, we analyze the performance of the first two steps of the SP algorithm (we stop after the Spectral Decomposition step, and do not apply the improvement step). 
+
+\begin{theorem} Assume that $\frac{(p-q)^2}{p}{\alpha_1 T\over n} =\omega(1)$. Under URS-1 or URS-2 sampling strategy with $T$ observations, after Step 2 (Spectral decomposition) in the Spectral Partition algorithm, there exists a permutation $\sigma$ of $\{1,\ldots,K\}$ such that:
+\begin{equation*}
+\lim_{n\to\infty} \mathbb{P}\left[\frac{1}{n}|\bigcup_{k=1}^K V_{\sigma(k)} \setminus S_k| = 0\right]=1.
+\end{equation*} \label{thm:specdecom}
+\end{theorem}
+
+Most often $p$ and $q$ are such that $\frac{p-q}{p}$ does not tend to 0, in which case we say that $p$ and $q$ are generic. For generic $p$ and $q$, when the necessary condition for accurate detection (\ref{eq:c1}) is satisfied, one can easily check that $\frac{(p-q)^2}{p}{\alpha_1 T\over n} =\omega(1)$ (because $p\frac{T}{n} = \omega(1)$). In that case, the fraction of misclassified nodes goes to 0 after Step 2 of SP algorithm. We conclude that the combination of the Trimming and Spectral Decomposition steps in the SP algorithm is asymptotically accurate whenever an accurate detection is at all possible and $p$ and $q$ are generic. The next theorem provides an upper bound of the proportion of misclassified nodes under the SP algorithm.
+
+\begin{theorem}\label{thm:algorithms} Assume that $\frac{(p-q)^2}{p}{\alpha_1 T\over n} =\omega(1)$ and $\frac{(p-q)^2}{20p}{\alpha_1 T\over n} \ge \log(p{T\over n})$. Under URS-1 or URS-2 sampling strategy with $T$ observations, the proportion of misclassified nodes under Spectral Partition satisfies, with high probability,
+\begin{equation}\label{eq:up}
+\varepsilon^{SP} (n,T) \le \exp \left(-\frac{(p-q)^2 }{20 p} \frac{\alpha_1  T}{n}\right).
+\end{equation}
+\end{theorem}
+
+Again, for generic $p$ and $q$, when the necessary condition for accurate detection (\ref{eq:c1}) is satisfied, one can easily check that  $\frac{(p-q)^2}{20p}{\alpha_1 T\over n} \ge \log(p{T\over n})$ (because $\log(p\frac{T}{n}) \le 2\log((p-q)\frac{T}{n})$ and $(p-q)\frac{T}{n}=\omega(\log((p-q)\frac{T}{n}))$). In that case, (\ref{eq:up}) holds, and in particular, $\lim_{n\to\infty}\mathbb{E}[\varepsilon^{SP}(n,T)]=0$.
+
+In rare cases, the necessary condition (\ref{eq:c1}) does not imply the conditions of Theorem~\ref{thm:specdecom} and Theorem~\ref{thm:algorithms}. For example, when both $p$ and $q$ tend to 1, $\min\{KL(p,q),KL(q,p)\}\frac{T}{n} = \omega(1)$ does not mean $\frac{(p-q)^2}{p}{\alpha_1 T\over n} =\omega(1)$  because $\min \{ KL(p,q) , KL(q,p) \} \ge \frac{1}{2}\frac{(p-q)^2}{2-p-q} = \omega(\frac{(p-q)^2}{p})$. Moreover, when $(p-q)\frac{T}{n}=\omega(\sqrt{p\frac{T}{n}})$ and $(p-q)\frac{T}{n} < \sqrt{20p\frac{T}{\alpha_1 n}\log(p\frac{T}{n})},$  $\frac{(p-q)^2}{20p}{\alpha_1 T\over n} < \log(p{T\over n})$.
+
+\subsection{Adaptive Sampling}
+
+Next we devise an adaptive sampling and clustering algorithm, referred to as Adaptive Spectral Partition (ASP),  that typically outperforms any algorithm with non-adaptive random sampling (it beats the lower bounds on $\mathbb{E}[\varepsilon(n,T)]$ obtained for random sampling). The adaptive algorithm is also order-optimal: ASP is asymptotically accurate under conditions (\ref{eq:c2}).
+
+The method to sample node pairs and reconstruct clusters is inspired by the idea of {\it spatial coupling} recently used in coding theory \cite{kudekar2011}, and in compressed sensing \cite{krzakala2012}. For example, in compressed sensing, spatial coupling consists in identifying with very high accuracy a small proportion of the components of the unknown vector, and to propagate this accuracy to other components using their inherent correlations. Here, we first identify $K$ small subsets of nodes, referred to as {\it reference kernels}, and such that all nodes within the same kernel are very likely to belong to the same cluster, and nodes in different kernels are very likely in different clusters. We then grow the clusters starting from the references kernels. To get a very high accuracy on the reference kernels, we use a positive fraction of the observation budget to sample pairwise interactions within a small subset of nodes. The remaining budget is used to determine the cluster of the remaining nodes.
+
+The algorithm has two main steps.\\
+{\bf 1. Construction of the reference kernels.} Randomly select a set $S\subset V$ of cardinality $n/(5\log(n))$ (here we just need the $|S|$ scales as $n/\log(n)$), and apply the SP algorithm to $S$ using $T/5$ observations. This gives the reference kernels $(S_k)_{k=1,\ldots,K}$. In addition, during this first step, we derive $\hat{p}$ and $\hat{q}$, estimators of the probabilities $p$ and $q$ (these estimators are simply obtained by counting the observations whose outcome are equal to 1 intra- and inter-kernels). We expect to identify {\it good kernels} in the sense that: $(C1)$: there exists a permutation $\sigma$ of $\{1,\ldots,K\}$ such that $\forall k, |S_k \setminus {V}_{\sigma(k)} |=0$, and $(C2): \left|1- \frac{\hat{p}-\hat{q}}{p-q} \right| \le 10^{-2}$.
+
+Note that in the first step, the observation budget per node is $\log (n)$ times larger than that we would have if SP was applied to $V$ using $T$ observations. Now from the performance analysis of SP, the fraction of misclassified nodes decreases exponentially with the budget per node. When $\frac{(p-q)^2 }{p+q }\frac{\alpha_1 T}{n} \ge C$ for some $C>1$, we get $\frac{(p-q)^2 }{p+q }\frac{\alpha_1 T \log(n)}{n} \ge C\log(n)$ if we change the budget from $T$ to $T\log(n)$. Thus in view of Theorem~\ref{thm:algorithms}, with high probability, $\varepsilon(n,T) \le 1/n^C < 1/ n$. Therefore, with high probability, the reference kernels have no error, and condition (C1) holds. (C2) also holds with high probability (a direct consequence of the law of large numbers).
+
+{\bf 2. Classification of the remaining nodes.} In this second step, we classify the remaining nodes using the reference kernels. For each of these nodes, say node $v$, for all $k$, we sample the node pair $(v,w)$ for $w$ uniformly selected in $S_k$, and repeat this ${2T\over 3Kn}$ times. We record the number of positive observations $A_k$ between $v$ and kernel $S_k$. We assign $v$ to $S_k$ if for any $k'\neq k$, $A_k-A_{k'}\ge \gamma$ where the threshold $\gamma$ guarantees the quality of the assignment. We choose $\gamma=\frac{(\hat{p}-\hat{q})T}{2Kn}$. This choice is motivated by the observation that $\mathbb{E}[A_k - A_{k'}] \approx \frac{(\hat{p}-\hat{q})2T}{3Kn} $ when $v \in V_k$ and $k\neq k' $. This procedure is repeated until there is no remaining nodes or no remaining budget. The second step is adaptive since the number of times a particular node $v$ is tested depends on the previous observation outcomes.
+
+The pseudo-code of ASP is presented below. The next theorem provides performance guarantees for the ASP algorithm.
+
+\begin{algorithm}[t!]
+   \caption{Adaptive Spectral Partition}
+   \label{alg:adaptive}
+\begin{algorithmic}
+   \STATE {\bfseries Input:} Observation budget $T$. 
+   \STATE {\bfseries 1. Initialization:} $\hat{V}_k = \emptyset$ for all $k$ and
+   $R = V$ 
+   \STATE {\bfseries 2. Find the reference kernels:} Build node set $S$ by randomly selecting $\frac{n}{5 \log n}$ nodes. 
+\STATE Get $T/5$ random observations for pairs of nodes in $S$, and construct an observation matrix $A_S$.
+   \STATE Run the Spectral Partition algorithm with input $A_S$, and output $(S_k)_{k=1,\ldots,K}$. $\hat{V}_k\leftarrow S_k$ for all $k$.
+   \STATE {\bfseries 3. Estimate $p$ and $q$}
+   \STATE $\hat{p} \leftarrow 
+  \frac{\sum_{k=1}^{K}\sum_{(v,w) \in S_k \times S_k} A_{vw}}{\sum_{k} | S_k |^2}\frac{|S|^2}{2T} $ and $\hat{q} \leftarrow\frac{\sum_{k=1}^{K}\sum_{(v,w) \in S_k \times S^c_k} A_{vw}}{ |S|^2 - \sum_{k} | S_k
+     |^2}\frac{|S|^2}{2T}$
+\STATE {\bfseries 4. Classify the remaining nodes.}
+\REPEAT
+\STATE $R \leftarrow V\setminus (\bigcup_{k}\hat{V}_k   )$ 
+\FOR{$v \in R$}
+\STATE Randomly sample $\frac{2T}{3Kn}$ pairs between $v$ and $S_k$ for
+all $k$
+\STATE $A_{vw} \leftarrow$ number of positive observations for $(v,w)$ 
+\STATE $k^{\star}(v) \leftarrow \arg\max_{k} \sum_{w \in S_k} A_{vw}$ 
+\STATE $d^{\star}(v) \leftarrow \min_{k \neq k^{\star}} \sum_{w \in S_{k^{\star}}}
+A_{vw} - \sum_{w' \in S_k} A_{vw'}$
+\IF{$d^{\star}(v) \ge \frac{\hat{p}-\hat{q}}{2K}\frac{T}{n}$}
+\STATE $\hat{V}_{k^{\star}(v)} \leftarrow \hat{V}_{k^{\star}(v)} \cup \{ v\}$
+\ENDIF
+\ENDFOR
+\UNTIL{There exists no remaining node or budget}
+\STATE If $R\neq\emptyset$, randomly assign $v \in R$ to $\{ \hat{V}_k \}$. Output $(\hat{V}_k)_{k=1,\ldots,K}$.
+\end{algorithmic}
+\end{algorithm}
+
+\begin{theorem} When $\frac{(p-q)^2}{p+q}\frac{T}{n} =\Omega(1)$ and ${T\over n}\max(KL(q,p),KL(p,q))=\omega(1)$, the proportion of misclassified nodes under the Adaptive Spectral Partition algorithm satisfies, with high probability,
+\begin{align}\label{eq:up2}
+ \varepsilon^{ASP}(n,T) & \le \exp\left(-\frac{T}{3Kn} \big( KL(q,p)+KL(p,q) \big) \right).
+\end{align}
+\label{thm:adapt-results}
+\end{theorem}
+
+From the results of Theorem~\ref{thm:la}, for any adaptive sampling, to get accurate reconstruction, i.e., $\lim_{n\rightarrow \infty} \mathbb{E}[\varepsilon (n,T)] = 0$, the number of observations $T$ should satisfy ${T\over n}\max(KL(q,p),KL(p,q))=\omega(1)$ and $\min\{p,1-q\}{T\over n}=\Omega(1)$. This necessary condition implies $\frac{(p-q)^2}{p+q}\frac{T}{n} =\Omega(1)$ when $q$ does not tend to 1. Indeed, when $p$ does not go to 1, $\frac{(p-q)^2}{p+q}\frac{T}{n} = \omega(1)$  (because $KL(q,p) \le \frac{(p-q)^2}{p(1-p)}$ and $KL(p,q) \le \frac{(p-q)^2}{q(1-q)}$), and when $p$ tends to 1, $\frac{(p-q)^2}{p+q}\frac{T}{n} =\Omega(1)$ since $ \frac{(p-q)^2}{p(p+q)} = \Theta(1)$. Thus, when $q$ does not tend to 1, ASP is asymptotically accurate under the necessary condition (\ref{eq:c2}).
+
+ %  When $p=\frac{10^5}{n}$, $q=\frac{1}{n \log (n)}$, and $T = n^2 ,$
+ %  Algorithm~\ref{alg:adaptive} makes $\lim_{n \rightarrow \infty}
+ %  \mathbb{E}[\varepsilon (n,T)] = 0 ,$ while
+ % any non-adaptive sampling cannot achieve $\lim_{n
+ %  \rightarrow \infty} \mathbb{E}[\varepsilon (n,T)] = 0$ by Theorem~\ref{thm:l1}. 
+
+
+
+
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "clustering_colt"
+%%% End: 

@@ -1,0 +1,138 @@
+\begin{thebibliography}{22}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Boppana(1987)]{boppana1987eigenvalues}
+R.~B. Boppana.
+\newblock Eigenvalues and graph bisection: An average-case analysis.
+\newblock In \emph{Foundations of Computer Science, 1987., 28th Annual
+  Symposium on}, pages 280--285. IEEE, 1987.
+
+\bibitem[Chatterjee(2012)]{chatterjee2012}
+S.~Chatterjee.
+\newblock Matrix estimation by universal singular value thresholding.
+\newblock \emph{arXiv preprint arXiv:1212.1247}, 2012.
+
+\bibitem[Chaudhuri et~al.(2012)Chaudhuri, Graham, and
+  Tsiatas]{chaudhuri2012spectral}
+K.~Chaudhuri, F.~C. Graham, and A.~Tsiatas.
+\newblock Spectral clustering of graphs with general degrees in the extended
+  planted partition model.
+\newblock \emph{Journal of Machine Learning Research-Proceedings Track},
+  23:\penalty0 35--1, 2012.
+
+\bibitem[Chen et~al.(2012)Chen, Sanghavi, and Xu]{chen2012}
+Y.~Chen, S.~Sanghavi, and Huan Xu.
+\newblock Clustering sparse graphs.
+\newblock In \emph{Advances in Neural Information Processing Systems 25}, pages
+  2213--2221. 2012.
+
+\bibitem[Coja-Oghlan(2010)]{coja2010}
+A.~Coja-Oghlan.
+\newblock Graph partitioning via adaptive spectral techniques.
+\newblock \emph{Combinatorics, Probability \& Computing}, 19\penalty0
+  (2):\penalty0 227--284, 2010.
+
+\bibitem[Condon and Karp(2001)]{condon2001}
+A.~Condon and R.~Karp.
+\newblock Algorithms for graph partitioning on the planted partition model.
+\newblock \emph{Random Structures and Algorithms}, 18\penalty0 (2):\penalty0
+  116--140, 2001.
+
+\bibitem[Dasgupta et~al.(2006)Dasgupta, Hopcroft, Kannan, and
+  Mitra]{dasgupta2006spectral}
+A.~Dasgupta, J.~Hopcroft, R.~Kannan, and P.~Mitra.
+\newblock Spectral clustering by recursive partitioning.
+\newblock In \emph{Algorithms--ESA 2006}, pages 256--267. Springer, 2006.
+
+\bibitem[Decelle et~al.(2011)Decelle, Krzakala, Moore, and
+  Zdeborov{\'a}]{decelle2011}
+A.~Decelle, F.~Krzakala, C.~Moore, and L.~Zdeborov{\'a}.
+\newblock Inference and phase transitions in the detection of modules in sparse
+  networks.
+\newblock \emph{Phys. Rev. Lett.}, 107, Aug 2011.
+
+\bibitem[Feige and Ofek(2005)]{feige2005spectral}
+U.~Feige and E.~Ofek.
+\newblock Spectral techniques applied to sparse random graphs.
+\newblock \emph{Random Structures \& Algorithms}, 27\penalty0 (2):\penalty0
+  251--275, 2005.
+
+\bibitem[Heimlicher et~al.(2012)Heimlicher, Lelarge, and
+  Massouli{\'e}]{heimlicher2012community}
+S.~Heimlicher, M.~Lelarge, and L.~Massouli{\'e}.
+\newblock Community detection in the labelled stochastic block model.
+\newblock \emph{arXiv preprint arXiv:1209.2910}, 2012.
+
+\bibitem[Holland et~al.(1983)Holland, Laskey, and Leinhardt]{holland1983}
+P.~Holland, K.~Laskey, and S.~Leinhardt.
+\newblock Stochastic blockmodels: First steps.
+\newblock \emph{Social Networks}, 5\penalty0 (2):\penalty0 109 -- 137, 1983.
+
+\bibitem[Jerrum and Sorkin(1998)]{Jerrum1998155}
+M.~Jerrum and G.~B. Sorkin.
+\newblock The metropolis algorithm for graph bisection.
+\newblock \emph{Discrete Applied Mathematics}, 82\penalty0 (1–3):\penalty0
+  155 -- 175, 1998.
+
+\bibitem[Krzakala et~al.(2012)Krzakala, M{\'e}zard, Sausset, Sun, and
+  Zdeborov\'a]{krzakala2012}
+F.~Krzakala, M.~M{\'e}zard, F.~Sausset, Y.~F. Sun, and L.~Zdeborov\'a.
+\newblock Statistical-physics-based reconstruction in compressed sensing.
+\newblock \emph{Phys. Rev. X}, 2:\penalty0 021005, May 2012.
+
+\bibitem[Kudekar et~al.(2011)Kudekar, Richardson, and Urbanke]{kudekar2011}
+S.~Kudekar, T.J. Richardson, and R.L. Urbanke.
+\newblock Threshold saturation via spatial coupling: Why convolutional ldpc
+  ensembles perform so well over the bec.
+\newblock \emph{Information Theory, IEEE Transactions on}, 57\penalty0
+  (2):\penalty0 803--834, 2011.
+
+\bibitem[Lai and Robbins(1985)]{lai1985}
+T.L. Lai and H.~Robbins.
+\newblock Asymptotically efficient adaptive allocation rules.
+\newblock \emph{Advances in Applied Mathematics}, 6\penalty0 (1):\penalty0
+  4--22, 1985.
+
+\bibitem[Massouli{\'e}(2013)]{massoulie2013}
+L.~Massouli{\'e}.
+\newblock Community detection thresholds and the weak ramanujan property.
+\newblock \emph{CoRR}, abs/1311.3085, 2013.
+
+\bibitem[McSherry(2001)]{mcsherry2001spectral}
+F.~McSherry.
+\newblock Spectral partitioning of random graphs.
+\newblock In \emph{Foundations of Computer Science, 2001. Proceedings. 42nd
+  IEEE Symposium on}, pages 529--537. IEEE, 2001.
+
+\bibitem[Mossel et~al.(2012)Mossel, Neeman, and Sly]{mossel2012stochastic}
+E.~Mossel, J.~Neeman, and A.~Sly.
+\newblock Stochastic block models and reconstruction.
+\newblock \emph{arXiv preprint arXiv:1202.1499}, 2012.
+
+\bibitem[{Mossel} et~al.(2013){Mossel}, {Neeman}, and {Sly}]{mossel2013}
+E.~{Mossel}, J.~{Neeman}, and A.~{Sly}.
+\newblock {A Proof Of The Block Model Threshold Conjecture}.
+\newblock \emph{ArXiv e-prints}, November 2013.
+
+\bibitem[Newman(2013)]{newman2013}
+M.~Newman.
+\newblock Spectral methods for network community detection and graph
+  partitioning.
+\newblock \emph{Phys. Rev. E}, 8, 2013.
+
+\bibitem[Rohe et~al.(2011)Rohe, Chatterjee, and Yu]{rohe2011}
+K.~Rohe, S.~Chatterjee, and B.~Yu.
+\newblock Spectral clustering and the high-dimensional stochastic blockmodel.
+\newblock \emph{The Annals of Statistics}, 39\penalty0 (4):\penalty0
+  1878--1915, 08 2011.
+
+\bibitem[Tao(2012)]{tao2012}
+T.~Tao.
+\newblock \emph{Topics in random matrix theory}, volume 132.
+\newblock AMS Bookstore, 2012.
+
+\end{thebibliography}

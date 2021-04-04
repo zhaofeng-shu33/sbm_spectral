@@ -1,0 +1,344 @@
+\documentclass[12pt]{colt}% Anonymized submission
+% \documentclass{colt2013} % Include author names
+
+% The following packages will be automatically loaded:
+% amsmath, amssymb, natbib, graphicx, url, algorithm2e
+
+\title[Community Detection via Adaptive Sampling]{Community Detection via Random and Adaptive Sampling}
+\usepackage{times}
+ % Use \Name{Author Name} to specify the name.
+ % If the surname contains spaces, enclose the surname
+ % in braces, e.g. \Name{John {Smith Jones}} similarly
+ % if the name has a "von" part, e.g \Name{Jane {de Winter}}.
+ % If the first letter in the forenames is a diacritic
+ % enclose the diacritic in braces, e.g. \Name{{\'E}louise Smith}
+
+ % Two authors with the same address
+\coltauthor{\Name{Se-Young Yun} \Email{seyoung@kth.se}\\
+\Name{Alexandre Proutiere} \Email{alepro@kth.se}\\
+\addr KTH, Osquldasv. 10, plan 6, 100-44, Stockholm, Sweden}
+
+ % Three or more authors with the same address:
+ % \coltauthor{\Name{Author Name1} \Email{an1@sample.com}\\
+ %  \Name{Author Name2} \Email{an2@sample.com}\\
+ %  \Name{Author Name3} \Email{an3@sample.com}\\
+ %  \addr Address}
+
+
+ % Authors with different addresses:
+% \coltauthor{\Name{Author Name1} \Email{abc@sample.com}\\
+ %\addr Address 1
+ %\AND
+ %\Name{Author Name2} \Email{xyz@sample.com}\\
+ %\addr Address 2
+ %}
+
+
+
+\usepackage{amsmath,amssymb, amsfonts}
+\usepackage{bm}
+%\usepackage{bm,color,epsf,epsfig,graphicx,multirow,paralist,times,subfigure}
+\usepackage{algorithm,algorithmic,bbm}
+
+\newcommand{\Ex}{{\mathbb E}} 
+
+% \newcommand{\note}[1]{[\textcolor{red}{\textit{#1}}]}
+% \hyphenation{op-tical net-works semi-conduc-tor}
+% \newcommand{\cA}{\mathcal{A}}
+% \newcommand{\cB}{\mathcal{B}}
+% \newcommand{\cC}{\mathcal{C}}
+% \newcommand{\cD}{\mathcal{D}}
+% \newcommand{\cE}{\mathcal{E}}
+% \newcommand{\cF}{\mathcal{F}}
+% \newcommand{\cG}{\mathcal{G}}
+% \newcommand{\cH}{\mathcal{H}}
+% \newcommand{\cI}{\mathcal{I}}
+% \newcommand{\cJ}{\mathcal{J}}
+% \newcommand{\cK}{\mathcal{K}}
+% \newcommand{\cL}{\mathcal{L}}
+% \newcommand{\cM}{\mathcal{M}}
+% \newcommand{\cN}{\mathcal{N}}
+% \newcommand{\cO}{\mathcal{O}}
+% \newcommand{\cP}{\mathcal{P}}
+% \newcommand{\cQ}{\mathcal{Q}}
+% \newcommand{\cR}{\mathcal{R}}
+% \newcommand{\cS}{\mathcal{S}}
+% \newcommand{\cT}{\mathcal{T}}
+% \newcommand{\cU}{\mathcal{U}}
+% \newcommand{\cV}{\mathcal{V}}
+% \newcommand{\cW}{\mathcal{W}}
+% \newcommand{\cX}{\mathcal{X}}
+% \newcommand{\cY}{\mathcal{Y}}
+% \newcommand{\cZ}{\mathcal{Z}}
+% \newcommand{\oA}{\overline{\mathcal{A}}}
+% \newcommand{\ovs}{\overline{s}}
+% \newcommand{\ovu}{\overline{u}}
+
+% \newcommand{\txC}{\text{C}}
+% \newcommand{\txD}{\text{D}}
+
+
+% \newcommand{\EE}{\mathbb{E}}
+% \newcommand{\NN}{\mathbb{N}}
+% \newcommand{\PP}{\mathbb{P}}
+% \newcommand{\RR}{\mathbb{R}}
+% \newcommand{\set}{\mathcal}
+% \newcommand{\indic}{\mathbbm{1} }
+% \newcommand{\QED}{$\blacksquare$ }
+
+
+% \DeclareMathOperator{\expect}{E}
+% \DeclareMathOperator{\prob}{P}
+
+% \newcommand{\natu}{\mathbb{N}}
+% \newcommand{\real}{\mathbb{R}}
+
+% \newcommand{\iskip}{{\vskip -0.4cm}}
+% \newcommand{\siskip}{{\vskip -0.2cm}}
+
+% \newcommand{\bp}{\noindent{\bf Proof.}\ }
+% \newcommand{\ep}{\hfill $\Box$}
+
+% \newcommand{\al}[1]{ \begin{align} #1  \end{align}}
+% \newcommand{\eq}[1]{ \begin{equation} #1  \end{equation}}
+% \newcommand{\als}[1]{ \begin{align*} #1  \end{align*}}
+% \newcommand{\eqs}[1]{ \begin{equation*} #1  \end{equation*}}
+
+% \newcommand{\sk}{\nonumber\\} 
+% \newcommand{\Lp}{\left(}
+% \newcommand{\Rp}{\right)}
+% \newcommand{\Lb}{\left[}
+% \newcommand{\Rb}{\right]}
+
+% \newcommand{\vs}{\vspace{0.2in}}
+% \newcommand{\hs}{\hspace{0.5in}}
+% \newcommand{\el}{\end{flushleft}}
+% \newcommand{\bl}{\begin{flushleft}}
+% \newcommand{\floor}[1]{  \lfloor #1 \rfloor} 
+% \newcommand{\ceil}[1]{  \lceil #1 \rceil} 
+
+% \newcommand{\ouralgo}{OSUB } 
+% \newcommand{\ouralgosw}{SW-OSUB } 
+
+% \newcommand{\separator}{
+%   \begin{center}
+%     \rule{\columnwidth}{0.3mm}
+%   \end{center}
+% }
+% \newenvironment{separation}{ \vspace{-0.3cm}  \separator  \vspace{-0.2cm}}
+% {  \vspace{-0.4cm}  \separator  \vspace{-0.1cm}}
+
+
+% %\newtheorem{proposition}{Proposition}
+% %\newtheorem{theorem}{Theorem}[section]
+% %\newtheorem{lemma}[theorem]{Lemma}
+% %\newtheorem{corollary}[theorem]{Corollary}
+% %\newtheorem{remark}{Remark}
+% %\newtheorem{example}{Example}
+% %\newtheorem{assumption}{Assumption}
+% %\newtheorem{definition}[theorem]{Definition}
+
+% \newcommand{\sqeq}{\addtolength{\thinmuskip}{-3mu}
+% \addtolength{\medmuskip}{-3mu}\addtolength{\thickmuskip}{-3mu}}
+
+% \newcommand{\unsqeq}{\addtolength{\thinmuskip}{+3mu}
+% \addtolength{\medmuskip}{+3mu}\addtolength{\thickmuskip}{+3mu}}
+
+
+% \DeclareGraphicsExtensions{.pdf,.eps}
+
+% \graphicspath{{.//}}
+
+
+
+\begin{document} 
+
+\maketitle
+
+\begin{abstract}
+In this paper, we consider networks consisting of a finite number of non-overlapping communities. To extract these communities, the interaction between pairs of nodes may be sampled from a large available data set, which allows a given node pair to be sampled several times. When a node pair is sampled, the observed outcome is a binary random variable, equal to 1 if nodes interact and to 0 otherwise. The outcome is more likely to be positive if nodes belong to the same communities. For a given budget of node pair samples or observations, we wish to jointly design a sampling strategy (the sequence of sampled node pairs) and a clustering algorithm that recover the hidden communities with the highest possible accuracy. We consider both non-adaptive and adaptive sampling strategies, and for both classes of strategies, we derive fundamental performance limits satisfied by any sampling and clustering algorithm. In particular, we provide necessary conditions for the existence of algorithms recovering the communities accurately as the network size grows large. We also devise simple algorithms that accurately reconstruct the communities when this is at all possible, hence proving that the proposed necessary conditions for accurate community detection are also sufficient. The classical problem of community detection in the stochastic block model can be seen as a particular instance of the problems consider here. But our framework covers more general scenarios where the sequence of sampled node pairs can be designed in an adaptive manner. The paper provides new results for the stochastic block model, and extends the analysis to the case of adaptive sampling.
+\end{abstract}
+
+\section{Introduction}\label{sec:introduction}
+
+Extracting structures or communities in networks is a central task in many disciplines including social sciences, biology, computer science, statistics, and physics. Applications are numerous. For instance, in social networks, one hopes that identifying clusters of users provides fundamental insights into the way users behave and interact, and in turn, helps the design of efficient recommender systems or the development of other marketing and advertisement techniques. Naturally, a user is attached to a particular community if she interacts a lot more with users within this cluster than with other users. Most methods for community detection assume that user interactions can be represented as a graph whose edges represent user pairs known to interact. This graph is first extracted from observed pairwise interactions and then partitioned into communities. Hence in most studies, the process of gathering information on users and the extraction of communities are decoupled. 
+
+In this paper, we address the problems of gathering information and clustering jointly. The interaction between pairs of nodes may be sampled from a large available data set, which allows a given node pair to be sampled several times. When a node pair is sampled, the observed outcome is a binary random variable, equal to 1 if nodes interact and to 0 otherwise. Observing an interaction is more likely when nodes belong to the same community than when they don't. For a given budget of node pair samples or observations, we wish to jointly design a sampling strategy (the sequence of sampled node pairs) and a clustering algorithm that recovers the hidden communities with the highest possible accuracy, i.e., the proportion of misclassified nodes has to be minimized. We investigate two classes of sampling strategies: (i) non-adaptive random strategies where the sequence of observed node pairs is decided a priori, and (ii) adaptive strategies under which the node pair sampled next depends on the previously sampled pairs, and the corresponding outcomes. For both classes of sampling strategy, we identify fundamental performance limits satisfied by {\it any} joint sampling and clustering algorithm, and also devise simple algorithms that approach these limits. These results allow to quantify the gain achieved using adaptive sampling, and to determine how the observation budget has to scale with the number of users so as to ensure an asymptotically accurate community detection (the proportion of misclassified users tends to 0 as the number of users grows large).
+
+\medskip
+\noindent
+{\bf Contributions.} We consider networks consisting of $n$ users or nodes with non-overlapping communities, and inspired by the celebrated stochastic block model, see \cite{holland1983}, we assume that the outcome of a node pair observation is positive (equal to 1) with probability $p$ if the nodes belong to the same community, and with probability $q<p$ otherwise. $p$ and $q$ may depend on the network size  $n$. We make no assumptions on $p$ and $q$. In particular, our results cover both the case of {\it dense} interactions where $p,q=\Theta(1)$ as $n$ grows large, and the case of {\it sparse} interactions where $p,q=o(1)$ as $n$ grows large. The observation budget is denoted by $T$, and typically depends on $n$ as well.
+%Typically we are interested in the case of {\it sparse} interaction where $p$ tends to 0 as $n$ grows large (to control the average number of nodes with which a given node interact). However most of our results apply to other cases as well. The observation budget denoted by $T$ may also depends on $n$.
+
+\medskip
+\noindent
+{\it a. Fundamental limits.} For any set of parameters $p$ and $q$, we derive asymptotic lower bounds on the expected proportion of misclassified nodes $\mathbb{E}[\varepsilon^\pi(n,T)]$ satisfied by any clustering algorithm $\pi$ in the case of non-adaptive random sampling strategies and by any joint sampling strategy and clustering algorithm $\pi$ in the case of adaptive sampling. We also give necessary conditions on $T$, $n$, $p$, and $q$ for asymptotically accurate community detection. More precisely:
+\begin{itemize}
+\item {\it Non-adaptive sampling.} Under any non-adaptive random sampling strategy, if there exists an asymptotically accurate clustering algorithm $\pi$, in the sense that $\lim_{n\to\infty}\mathbb{E}[\varepsilon^\pi(n,T)]=0$, then\footnote{$KL(p,q)=p\log(p/q)+(1-p)\log((1-p)/(1-q))$.} 
+:
+\begin{equation}\label{eq:c1}
+{T\over n}=\omega(1),\quad\hbox{and}\quad {T\over n}\min(KL(q,p),KL(p,q))=\omega(1).
+\end{equation}
+\item {\it Adaptive sampling.} If there exists an asymptotically accurate joint adaptive sampling strategy and clustering algorithm $\pi$, then:
+\begin{equation}\label{eq:c2}
+\min\{1-q, p \}{T\over n}=\Omega(1),\quad\hbox{and}\quad {T\over n}\max(KL(q,p),KL(p,q))=\omega(1).
+\end{equation}
+\end{itemize}
+The gain achieved using adaptive sampling can be significant when for example, $q$ is much smaller than $p$. To derive our performance bounds, we leverage change-of-measure arguments similar to those used in bandit optimization to provide regret lower bounds. This contrasts with most techniques used in statistical inference to obtain such bounds  (most often there, the analysis relies on Fano's inequality).
+
+\medskip
+\noindent
+{\it b. Cluster Algorithms for Non-adaptive Sampling.} For non-adaptive random sampling strategies, we devise a low-complexity clustering algorithm, referred to as Spectral Partition (SP). The algorithm first constructs an {\it observation} matrix where the outcomes of the node pair observations are reported. After appropriate trimming, the spectral properties of the matrix (the largest eigenvalues and the corresponding eigenvectors) are exploited to derive rough estimates of the communities. These estimates are then improved using a recursive greedy procedure inspired by the $k$-mean algorithm. We prove that the SP algorithm is asymptotically accurate under conditions (\ref{eq:c1}), i.e., it is order-optimal. This implies in particular that the necessary conditions (\ref{eq:c1}) for asymptotically accurate detection are tight (they are also sufficient). We further analyse the performance of the SP algorithm. For example for networks with two communities of respective sizes $\alpha n$ and $(1-\alpha)n$, using techniques from random matrix theory, we prove that under conditions (\ref{eq:c1}), $\varepsilon^{SP}(n,T)\le \exp(-{(p-q)^2\over 20 p}{\alpha_1 T\over n})$ with high probability\footnote{An event $\chi$ occurs with high probability, if $\lim_{n \to \infty} \mathbb{P}[\chi] = 1$.}, where $\alpha_1 n $ is  the size of the smallest cluster. 
+
+\medskip
+\noindent
+{\it c. Joint Adaptive Sampling and Clustering Algorithms.} We also propose a joint sampling and clustering algorithm, referred to as Adaptive Spectral Partition (ASP). The algorithm exploits the idea of {\it spatial coupling} recently advocated in compressed sensing by \cite{krzakala2012} and coding theory by \cite{kudekar2011}. More precisely, under ASP, we first use a positive fraction of the observation budget to classify a small proportion of nodes with very high accuracy. To do so we use the SP algorithm. After this first step, we obtain subsets of the communities, referred to as reference kernels, and for which we have strong probabilistic guarantees. The remaining observation budget is then used to attach the remaining nodes to the various reference kernels in an adaptive way. We establish that the ASP algorithm is asymptotically accurate under conditions (\ref{eq:c2}), which implies that (\ref{eq:c2}) are necessary and sufficient conditions for asymptotically accurate detection. The performance analysis of the ASP algorithm reveals for example that for networks with two communities, under conditions (\ref{eq:c2}), $\varepsilon^{ASP}(n,T)\le \exp(-{\alpha_1 T\over 3Kn}(KL(q,p)+KL(p,q)))$ with high probability. We compare the performance of SP and ASP using numerical experiments, and confirm that adaptive sampling may yield significant performance gains.
+
+\medskip
+\noindent
+{\bf Related work.} Community detection has attracted a lot of attention in different scientific fields recently, and the topic is too vast for a detailed review of existing results here. \cite{newman2013}, \cite{coja2010}, \cite{mossel2013} and references therein cover a large part of the literature, from physics, computer science, and mathematics perspectives. As already mentioned, the starting point of most of the studies is an observed graph of interaction. In such as case, detecting communities boils down to a graph partitioning problem, that one can solve using spectral methods \cite{boppana1987eigenvalues}, \cite{mcsherry2001spectral}, \cite{dasgupta2006spectral}, \cite{chaudhuri2012spectral}, compressed sensing and matrix completion ideas \cite{chen2012}, \cite{chatterjee2012}, or other techniques \cite{Jerrum1998155}. Our model and approach are different: we address the problem of gathering information on node interactions, and that of identifying communities jointly. As far as we know, we provide the first set of results for this framework. 
+
+The stochastic block model \cite{holland1983}, also referred to as the planted partition model, has been extensively used to assess the performance of community detection algorithms, see e.g. \cite{rohe2011}, \cite{decelle2011}. Our model is much more general, and covers as a particular case the stochastic block model (the latter corresponds to the case of non-adaptive sampling strategy where one has one observation per node pair, i.e., $T=n(n-1)/2$). There is a rich literature on community detection for the stochastic block model. In the dense regime, where $p,q=\Theta(1)$, most previous work focuses on identifying conditions under which a given algorithm recovers the clusters exactly, see e.g. \cite{mcsherry2001spectral}, \cite{condon2001}. For example, in \cite{chen2012} the authors show that communities can be extracted if $p-q\ge \Omega(\sqrt{p/n}\log(n)^2)$. In the sparse regime where $p,q=o(1)$, the main focus recently has been on identifying the phase transition threshold (a condition on $p$ and $q$) for reconstruction. It was conjectured in \cite{decelle2011} that if $p-q<\sqrt{2n(p+q)}$ (i.e., under the threshold), no algorithm can perform better than a simple random assignment of users to clusters, and above the threshold, clusters can partially be recovered. The conjecture was recently proved in \cite{mossel2012stochastic}, \cite{massoulie2013}, \cite{mossel2013}. A good survey of other existing results for the sparse regime can be found in \cite{coja2010}, and \cite{chen2012}. In this paper, we provide a unified (in dense and sparse regimes) treatment of the stochastic block model, and derive, as far as we know, the first necessary and sufficient conditions for asymptotically accurate community detection valid under any set of parameters $p$ and $q$. Necessary conditions for accurate detection are not derived in the aforementioned work. 
+
+This paper covers more than the stochastic block model. It provides a systematic analysis of joint sampling strategies and clustering algorithms. For example, from our results, we can quantify the number of observations required to accurately detect communities when under the stochastic block model, this is not possible (i.e. when we are under the phase transition threshold for reconstruction).
+
+\section{Models and Objectives}\label{sec:model}
+
+We consider a network consisting of a set $V$ of $n$ nodes. $V$ admits a hidden partition of $K$ non-overlapping subsets $V_1,\ldots,V_K$ ($V=\bigcup_{k=1}^KV_k$). The size of class or cluster $V_k$ is $\alpha_k\times n$ for some $\alpha_k>0$. Without loss of generality, we assume that $\alpha_1 \le \alpha_2 \le \dots \le \alpha_K$. We assume that when the network size $n$ grows large, the number of communities $K$ and their relative sizes are kept fixed. By observing random pairwise interactions between nodes, we wish to recover the hidden partition. Let $E=V\times V$ be the set of node pairs. Pairs of nodes are successively sampled or observed. When a pair of nodes is sampled, these nodes are more likely to interact if they belong to the same community. More precisely, nodes of the same community interact with probability $p$, and nodes of different communities interact with probability $q$, with $q<p$. If for the $t$-th observation, node pair $(v,w)$ is sampled, the outcome $X_{vw}(t)$ is 1 if nodes interact, in which case we say that the observation is positive, and 0 otherwise. The Bernoulli random variables $X_{vw}(t)$'s are independent across nodes pairs $(v,w)$ and time $t$. We have a budget of $T$ observations, and $T$ can be either smaller than or equal to $n(n-1)/2$, in which case we say that the network is under-sampled, or larger than $n(n-1)/2$, in which case the network is over-sampled. We are primarily interested in large networks, and wish to design algorithms able to recover the partition accurately when $n$ is large. Naturally, the network parameters $p$ and $q$, as well as the observation budget $T$, may depend on $n$. 
+%Of particular interest are scenarios where two nodes, selected uniformly at random, interact rarely, i.e., $\lim_{n\to\infty}p=\lim_{n\to\infty}q=0$. These scenarios arise naturally in many contexts, as already mentioned earlier. Note however that our results and algorithms also apply more generally for any $p$ and $q$. 
+
+\subsection{Sampling strategies}
+
+We consider different types of sampling strategies.
+
+\noindent
+{\bf Random Sampling.} Here the sequence of observed node pairs is random, and we are mainly interested in two types of such sequences:\\
+(1) Uniform Random Sampling (URS-1): for the $t$-th observation, the observed pair of nodes is chosen uniformly at random. \\
+(2) Uniform Random Sampling without Replacement (URS-2): Assume that the budget $T=mn(n-1)/2+r$ where $m\in \mathbb{N}$ and $r\in\{0,\ldots,n(n-1)/2-1\}$. Here each pair $(v,w)$ is first observed $m$ times, and for the $r$ remaining observations, node pairs are selected uniformly at random without replacement (each pair is observed at most $m+1$ times). 
+
+\noindent
+{\bf Adaptive Sampling.} It may be more efficient to design the sequence of observed node pairs in an adaptive manner. We could select the node pair to be observed next depending on the past observations. In this case, the $(t+1)$-th observed pair, or more generally its distribution (in case of randomized sampling strategy), depends on $(e_s,X_s, s=1,\ldots, t)$, where $e_s$ denotes the $s$-th observed node pair, and $X_s$ is the corresponding interaction outcome. 
+
+Under all sampling strategies, after the $T$ observations, one applies a clustering algorithm to recover the initially hidden partition. Such an algorithm $\pi\in \Pi$ maps the observations $(e_t,X_t, t=1,\ldots, T)\in (E\times \{0,1\})^T$ to an estimated partition $(\hat{V}_1,\ldots,\hat{V}_k)$ of the set $V$. The performance of the joint sampling strategy and clustering algorithm $\pi$ is quantified using the proportion $\varepsilon^\pi(n,T)$ of nodes that are misclassified. We say that $\pi$ is asymptotically accurate when $\lim_{n\to\infty} \mathbb{E}[\varepsilon^\pi(n,T)]=0$ (note that in the previous limit, $T$, $p$, and $q$ typically vary with $n$). For a given sampling strategy, we are interested in deriving conditions on $n$, $T$, $p$, and $q$, such that there exists an asymptotically accurate algorithm $\pi\in \Pi$. 
+
+
+\subsection{Stochastic Block Model with Labels}
+
+To study the performance of non-adaptive sampling strategies in both under and over-sampling scenarios, it is instrumental to introduce the so-called {\it Stochastic Block Model with Labels} (SBML), see \cite{heimlicher2012community}. In SBML, the outcome of an observation is a label $\ell\in {\cal L}$, and each node pair is observed once -- we have exactly $n(n-1)/2$ observations. The observation of a node pair $e$ yields a label $\ell(e)$ equal to $\ell$ with probability $p(\ell)$ if the two nodes are within the same community, and with probability $q(\ell)$ otherwise. In the SBML, one may think of a label $\ell$ as a type of interaction between two nodes. In what follows, we denote by $0\in {\cal L}$ a particular label. The latter typically represents the absence of interaction between two nodes.
+
+In the SBML, one has access to the sampled labels of each node pair, and one applies a clustering algorithm to retrieve the communities. Such an algorithm $\pi\in \Pi'$ maps the observations $(\ell(e), e\in E)$ to an estimated partition $(\hat{V}_1,\ldots,\hat{V}_K)$ of the set $V$.
+
+Non-adaptive sampling strategies can be represented as particular examples of the SBML. Indeed, the label of a node pair can represent all the information gathered on this pair using the $T$ observations. We provide below a way of representing URS-1 and under-sampled URS-2 sampling strategies using the SBML. The over-sampled URS-2 sampling strategies can be mapped to the SBML similarly. 
+
+
+\begin{example} (URS-1) Let $\beta=2/(n(n-1))$. The set of labels is ${\cal L}=\{(m,z),m\in \{0,\ldots T\}, z\in\{0,\ldots,m\}\}$. After the $T$ observations, a node pair has the label $(m,z)$ if this pair has been observed $m$ times, and that the interaction outcomes have been equal to 1 $z$ times. For example, a pair has label  $(0,0)$ if it has not been observed. The label distribution is then defined as: for all $(m,z)\in {\cal L}$, $p(m,z)={T\choose m}\beta^m(1-\beta)^{T-m} {m\choose z}p^z(1-p)^{m-z}$, and $q(m,z)={T\choose m}\beta^m(1-\beta)^{T-m} {m\choose z}q^z(1-q)^{m-z}.$
+\end{example}
+
+\begin{example} (Under-sampled URS-2) To represent random sampling strategies without replacement in the under-sampled scenario using the SBML, we introduce three labels $\emptyset$, 0, and 1, i.e., ${\cal L}=\{\emptyset, 0, 1\}$. A node pair has label $\emptyset$ if it has not been observed, 0 if it has been observed (once) and if the outcome is 0, and 1 if it has been observed and if the outcome is 1. Let $\beta=2T/(n(n-1))$ denote the proportion of observed node pairs. The label distribution is: $p(\emptyset)=q(\emptyset)=1-\beta$, $p(0)=(1-p)\beta$, $q(0)=(1-q)\beta$, $p(1)=p\beta$, and $q(1)=q\beta$. 
+\end{example}
+
+%\begin{example} (Over-sampled URS-2) Let $T=mn(n-1)/2+r$ where $r\in\{0,\ldots,n(n-1)/2-1\}$, and let $\beta=2r/(n(n-1))$. The set of labels corresponds to the possible available information gathered for a node pair: ${\cal L}=\{ (z,\emptyset), (z,0), (z,1), z=0,\ldots,m\}$. A node pair has the label $(z,\emptyset)$ if the pair has been observed $m$ times, and that the interaction outcome has been $z$ times equal to 1. Label $(z,0)$ means that the pair has been observed $m+1$ times and that the last observation outcome is 0. The label distribution is here given by: for any $z\in\{0,\ldots,m\}$, 
+%\begin{align*}
+%p(z,\emptyset)&=(1-\beta){m\choose z}p^z(1-p)^{m-z}\\ 
+%q(z,\emptyset)&=(1-\beta){m\choose z}q^z(1-q)^{m-z}\\
+%p(z,0)&=\beta (1-p){m\choose z}p^z(1-p)^{m-z}\\ 
+%q(z,0)&=\beta (1-q){m\choose z}q^z(1-q)^{m-z}\\
+%p(z,1)&=\beta p{m\choose z}p^z(1-p)^{m-z}\\
+%q(z,1)&=\beta q{m\choose z}q^z(1-q)^{m-z}.
+%\end{align*}
+%\end{example}
+
+\section{Lower Bounds}
+
+In this section, we derive lower bounds of the average proportion of misclassified nodes under the various types of joint sampling strategy and clustering algorithm. We provide a lower bound first for the SBML and non-adaptive sampling strategies, and then for adaptive sampling strategies. The lower bounds allow us to identify a necessary condition for asymptotically accurate community detection.
+
+\subsection{Non-adaptive Random Sampling}
+
+\subsubsection{The SBML}
+
+We denote by $\varepsilon^\pi(n)$ the proportion of misclassified nodes under a given clustering algorithm $\pi\in \Pi'$. Again we say that a clustering algorithm $\pi\in \Pi'$ is asymptotically accurate if $\lim_{n\to\infty} \mathbb{E}[\varepsilon^\pi(n)]=0$.  The following theorem provides a lower bound of the expected proportion of misclassified nodes satisfied by any asymptotically accurate algorithm. Recall that $\alpha_1$ defines the size of the smallest cluster (i.e., the latter is of size $\alpha_1 n$).
+
+
+\begin{theorem}
+In the sparse regime ($\lim_{n\to \infty}\frac{\sum_{\ell\neq 0}p(\ell)+q(\ell)}{\min\{p(0),q(0)\}}=0$), for any asymptotically accurate algorithm $\pi\in \Pi'$, we have:
+$$\lim\inf_{n \rightarrow \infty} {4\mathbb{E}[\varepsilon^\pi(n)]\over \alpha_1\exp(-4(\alpha_1 + \alpha_2)\tau(n))} \ge 1 ,\quad \mbox{where}\quad \tau(n) = \sum_{\ell \in {\cal L} } n\frac{(p(\ell)-q(\ell))^2}{p(\ell)+q(\ell)} .$$
+
+\label{thm:lower-bound}
+\end{theorem}
+
+%The proof of the above theorem relies on a change-of-measure argument that resembles those typically used in bandit optimization problems \cite{lai1985} to derive regret lower bounds.
+
+\subsubsection{URS-1 and URS-2 Sampling Strategies}
+
+Theorem \ref{thm:lower-bound} can be applied to the various aforementioned non-adaptive sampling strategies. Actually, for the strategies considered here, the results presented in Theorem \ref{thm:lower-bound} can be improved: we derive a universal non-asymptotic lower bound on the average proportion of misclassified nodes valid under random sampling strategies URS-1 and URS-2, and for all set of parameters $n$, $T$, $p$, and $q$. Recall that $\alpha_2$ defines the size of the second smallest cluster (i.e., the latter is of size $\alpha_2 n$). 
+
+\begin{theorem}\label{thm:l1}
+Under URS-1 and URS-2 sampling strategies, for any clustering algorithm $\pi\in\Pi$, we have: for all $T$, $p$, $q$, and $n$,
+\begin{equation}\label{eq:nonas}
+{\mathbb{E}[\varepsilon^\pi(n,T)]\ge {\alpha_1 \over 4} \exp(-\kappa_1(n,T))},
+\end{equation}
+where
+\begin{align*}
+\kappa_1(n,T)=& T{2(\alpha_1+\alpha_2)\over n} \min \{ KL(q,p), KL(p,q)\}  \cr & ~+2\sqrt{\frac{4T(\alpha_1 + \alpha_2)}{n}\left[\min\{q,1-p\} \left(
+    \log\frac{p(1-q)}{q(1-p)}\right)^2  + \left(
+    \log(\min\{\frac{p}{q},\frac{1-q}{1-p} \})\right)^2 \right]}.
+\end{align*}
+As a consequence, for any asymptotically accurate clustering algorithm $\pi\in\Pi$ (i.e., satisfying $\lim_{n\to\infty} \mathbb{E}[\varepsilon^\pi(n,T)]=0$), we have:
+\begin{equation}\label{eq:univ2}
+{T\over n}=\omega(1),\quad {T\over n}\min(KL(q,p),KL(p,q))=\omega(1),
+\end{equation}
+\begin{equation}\label{eq:univ}
+\hbox{and}\quad \lim\inf_{n\to\infty} {4\mathbb{E}[\varepsilon^\pi(n,T)]\over \alpha_1 \exp(-{2(\alpha_1 + \alpha_2)T\over n}\min(KL(q,p),KL(p,q)))}\ge 1.
+\end{equation}
+\end{theorem}
+
+(\ref{eq:univ2}) provides two necessary conditions for asymptotically accurate community detection. We show in the next section that these conditions are also sufficient, i.e., we propose a clustering algorithm that is asymptotically accurate when ${T\over n}=\Omega(1)$ and ${T\over n}\min(KL(q,p),KL(p,q))=\omega(1)$. Note that the results of Theorem \ref{thm:l1} hold for arbitrary parameters $p$ and $q$. 
+
+For {\it dense} interactions where $p,q=\Theta(1)$, we need $T(p-q)^2/n=\omega(1)$\footnote{We repeatedly use the facts that for $q\le p$, $2(p-q)^2\le KL(q,p)\le (p-q)^2/(p(1-p))$, and $KL(q,p)\sim (p-q)^2/(p(1-p))$ as $q\to p^-$.} to get an asymptotically accurate detection. This is in agreement with existing results for the stochastic block model (URS-2 sampling strategy with $T=n(n-1)/2$), see Table 1 in \cite{chen2012}: the best known algorithms recover the communities exactly ($n\varepsilon(n,T) = 0$) with high probability when $p-q=\Omega(\sqrt{\log(n)/n})$, and our lower bound says that to obtain $\mathbb{E}[n \varepsilon (n,T)] < 1$, we need $p-q=\Omega(\sqrt{\log(n)/n})$. 
+
+For {\it sparse} interactions where $p,q=o(1)$, we need $T(p-q)^2/(pn)=\omega(1)$ to get an asymptotically accurate detection. For example, when $p=a/n$ and $q=b/n$ for some constants $a>b$, then we need ${T\over n^2}=\omega(1)$ for accurate detection. Note that in this case, for the classical stochastic block model, i.e., for $T=n(n-1)/2$, a necessary and sufficient condition to be able to devise an algorithm that performs better than assigning nodes randomly to communities is $(a-b)>\sqrt{2(a+b)}$ \cite{mossel2012stochastic}, \cite{massoulie2013}. Our result indicates that when targeting an asymptotically accurate detection, we need much more observations (e.g. $T=\log\log(n)n^2$).
+
+
+It should be finally observed that the results of Theorem \ref{thm:l1} do not depend on the way node pairs are sampled, provided that they are randomly selected. In particular, we do not expect that sampling without replacement outperforms purely random sampling (with equal observation budget). 
+
+\subsection{Adaptive Sampling}
+
+Next we derive similar asymptotic lower bounds on the expected proportion of misclassified nodes in the case of adaptive sampling strategies. The proof of the following theorem is more involved than that of Theorem \ref{thm:l1}; it relies on a change-of-measure argument and on Doob's maximal inequality. 
+
+\begin{theorem}\label{thm:la}
+For any asymptotically accurate joint adaptive sampling strategy and clustering algorithm $\pi\in\Pi$ (i.e., satisfying $\lim_{n\to\infty} \mathbb{E}[\varepsilon^\pi(n,T)]=0$), we have: 
+\begin{equation}\label{eq:univ3}
+\min\{p,1-q\}{T\over n}=\Omega(1)  \quad\hbox{and}\quad {T\over n}\max(KL(q,p),KL(p,q))=\omega(1).
+\end{equation}
+In addition, when $\frac{-\log \mathbb{E}[\varepsilon^\pi(n,T)]}{ \max\{\log \frac{p}{q},\log \frac{1-q}{1-p}\} } = \omega(1)$, the following holds:
+\begin{equation}\label{eq:univ4}
+ \lim\inf_{n\to\infty} {\mathbb{E}[\varepsilon^\pi(n,T)]\over \exp(-{8T\over \min\{1/2, 1-\alpha_K\} n}\max(KL(q,p),KL(p,q)))}\ge 1,
+\end{equation}
+where $\alpha_k$ defines the size of the largest cluster (i.e., the latter is of size $\alpha_K n$).
+\end{theorem}
+
+In view of Theorems \ref{thm:l1} and \ref{thm:la}, adaptive sampling is expected to outperform random sampling (with equal observation budget) when $\min(KL(q,p),KL(p,q))\ll \max(KL(q,p),KL(p,q))$. For example, in the case of sparse interactions, if $q=p^\gamma$ with $\gamma>1$, then the necessary conditions for asymptotically accurate detection reduce to ${pT\over n}=\omega(1)$ and ${p\log(1/p)T\over n}=\omega(1)$ under non-adaptive random sampling and adaptive sampling, respectively. Note also that even if the necessary conditions for accurate detection are identical under any sampling strategy (non-adaptive or adaptive), then the lower bound on the expected proportion of misclassified nodes is improved under adaptive sampling. In the next section, we show that the necessary conditions (\ref{eq:univ3}) for accurate detection are sufficient, i.e., we propose a clustering algorithm that is asymptotically accurate when $\min\{p,1-q \}{T\over n}=\Omega(1)$ and ${T\over n}\max(KL(q,p),KL(p,q))=\omega(1)$. 
+
+\section{Algorithms}
+
+In this section, we present simple clustering algorithms for non-adaptive sampling strategies, as well as joint adaptive sampling and clustering algorithms. We provide upper bounds on the proportions of misclassified nodes under these algorithms, and establish that they are order-optimal: they are asymptotically accurate as soon as conditions (\ref{eq:c1}) or (\ref{eq:c2}) are satisfied.
+
+\input{algorithm_colt}
+
+
+
+\section{Conclusion}\label{sec:conclusion}
+In this paper, we studied the problem of community detection in networks using non-adaptive and adaptive sampling strategies. We derived necessary conditions under which an accurate detection is possible when the network size grows large, and presented algorithms that are accurate under these conditions. Our numerical experiments presented in appendix show that gathering information in an adaptive manner can significantly improve the detection accuracy.
+
+
+\clearpage
+\newpage
+
+\bibliography{reference}
+
+\input{numerical}
+\input{supplement-colt}
+
+
+\end{document} 
+
